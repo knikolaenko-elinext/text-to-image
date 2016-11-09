@@ -1,0 +1,3 @@
+rootProject.name = 'text-to-image'
+include 'text-to-image-core'
+include 'text-to-image-web'
