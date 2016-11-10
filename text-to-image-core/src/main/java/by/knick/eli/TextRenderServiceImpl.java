@@ -25,6 +25,8 @@ public class TextRenderServiceImpl implements TextRenderService {
 	private static final int MINIMAL_FONT_SIZE = 8;
 	private static final int MAXIMUM_FONT_SIZE = PREFFERABLE_HEIGHT_SHORT;
 
+	private static final String FONT_FAMILY = "Serif";
+
 	private static final double THRESHOLD = 0.97;
 	private static final int MAX_ITERATIONS = 15;
 
@@ -36,7 +38,7 @@ public class TextRenderServiceImpl implements TextRenderService {
 		boolean useTallVersion = sizeCalculationResult.useTallVersion;
 
 		Hashtable<TextAttribute, Object> textAttributes = new Hashtable<TextAttribute, Object>();
-		textAttributes.put(TextAttribute.FAMILY, "Serif");
+		textAttributes.put(TextAttribute.FAMILY, FONT_FAMILY);
 		textAttributes.put(TextAttribute.SIZE, new Float(fontSize));
 		AttributedString attributedText = new AttributedString(text, textAttributes);
 
@@ -114,7 +116,7 @@ public class TextRenderServiceImpl implements TextRenderService {
 		float currentFontSize = MINIMAL_FONT_SIZE;
 
 		Hashtable<TextAttribute, Object> textAttributes = new Hashtable<TextAttribute, Object>();
-		textAttributes.put(TextAttribute.FAMILY, "Serif");
+		textAttributes.put(TextAttribute.FAMILY, FONT_FAMILY);
 
 		boolean fontSizeFound = false;
 		boolean useTallVersion = false;
