@@ -1,4 +1,4 @@
-package com.knick;
+package com.knick.eli;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -22,7 +22,7 @@ public class TextRenderServiceTest {
 			byte[] imgBytes = testable.renderText(text);
 			Assert.assertNotNull(imgBytes);
 
-			File imgBytesFile = File.createTempFile("text-render-unittest-renderHello-", ".png");
+			File imgBytesFile = File.createTempFile("text-render-unittest-renderHello-", ".bmp");
 			FileUtils.writeByteArrayToFile(imgBytesFile, imgBytes);
 
 			charCount = (int)(charCount * 1.5) + 1;

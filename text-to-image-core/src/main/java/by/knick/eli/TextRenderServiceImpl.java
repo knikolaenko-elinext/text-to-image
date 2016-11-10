@@ -22,7 +22,7 @@ public class TextRenderServiceImpl implements TextRenderService {
 	private static final int PREFFERABLE_HEIGHT_SHORT = 68;
 	private static final int PREFFERABLE_HEIGHT_TALL = 198;
 
-	private static final int MINIMAL_FONT_SIZE = 8;
+	private static final int MINIMAL_FONT_SIZE = 10;
 	private static final int MAXIMUM_FONT_SIZE = PREFFERABLE_HEIGHT_SHORT;
 
 	private static final String FONT_FAMILY = "Serif";
@@ -49,8 +49,9 @@ public class TextRenderServiceImpl implements TextRenderService {
 		// index of the first character after the end of the paragraph.
 		int paragraphEnd = paragraph.getEndIndex();
 
-		BufferedImage img = new BufferedImage(PREFFERABLE_WIDTH, useTallVersion ? PREFFERABLE_HEIGHT_TALL : PREFFERABLE_HEIGHT_SHORT, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage img = new BufferedImage(PREFFERABLE_WIDTH, useTallVersion ? PREFFERABLE_HEIGHT_TALL : PREFFERABLE_HEIGHT_SHORT, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2d = img.createGraphics();
+		clearImage(useTallVersion, g2d);
 		setRenderingHints(g2d);
 		FontRenderContext frc = g2d.getFontRenderContext();
 
@@ -89,13 +90,14 @@ public class TextRenderServiceImpl implements TextRenderService {
 
 		// Write to byte array
 		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-			ImageIO.write(img, "png", baos);
+			ImageIO.write(img, "BMP", baos);
 			return baos.toByteArray();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
 	}
 
+	
 	private static final class SizeCalculationResult {
 		float fontSize;
 		boolean useTallVersion;
@@ -108,7 +110,7 @@ public class TextRenderServiceImpl implements TextRenderService {
 	}
 
 	SizeCalculationResult calculateFontSize(String text) {
-		BufferedImage img = new BufferedImage(PREFFERABLE_WIDTH, PREFFERABLE_HEIGHT_TALL, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage img = new BufferedImage(PREFFERABLE_WIDTH, PREFFERABLE_HEIGHT_TALL, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2d = img.createGraphics();
 		setRenderingHints(g2d);
 		FontRenderContext frc = g2d.getFontRenderContext();
@@ -218,6 +220,12 @@ public class TextRenderServiceImpl implements TextRenderService {
 
 		return new SizeCalculationResult(currentFontSize, useTallVersion);
 	}
+	
+	private void clearImage(boolean useTallVersion, Graphics2D g2d) {
+		g2d.setColor(Color.WHITE);
+		g2d.fillRect(0, 0, PREFFERABLE_WIDTH, useTallVersion ? PREFFERABLE_HEIGHT_TALL : PREFFERABLE_HEIGHT_SHORT);
+	}
+
 
 	private void setRenderingHints(Graphics2D g2d) {
 		g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);

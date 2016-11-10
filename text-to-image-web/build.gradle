@@ -27,6 +27,10 @@ repositories {
 
 
 dependencies {
+	compile project(':text-to-image-core')
 	compile('org.springframework.boot:spring-boot-starter')
+	compile('org.springframework.boot:spring-boot-starter-web')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+	
+	compile group: 'commons-io', name: 'commons-io', version: '2.5'
 }
