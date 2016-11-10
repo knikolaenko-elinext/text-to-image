@@ -1,5 +1,7 @@
 # Text To BMP Demo App
 
+For reviewing functionality you can run [Live example](http://139.59.147.15:8080/convert?text=Hello)
+
 ### Prerequisites
 
 You need git to clone the project and JDK 8 to build and run.
@@ -28,8 +30,7 @@ Windows:
 ```
 java -jar ./text-to-image-web/build/libs/text-to-image-web-0.0.1-SNAPSHOT.jar
 ```
-	
-Now browse to the app at `http://localhost:8080/convert?text=Hello`
+Now browse to the app at [http://localhost:8080/convert?text=Hello](http://localhost:8080/convert?text=Hello)
 
 ### Importing as Oracle stored procedure
 
