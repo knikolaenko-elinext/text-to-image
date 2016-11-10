@@ -238,4 +238,9 @@ public class TextRenderServiceImpl implements TextRenderService {
 		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 		g2d.setColor(Color.BLACK);
 	}
+	
+	public static byte[] renderTextIntoImage(String text) {
+		TextRenderService instance = new TextRenderServiceImpl();
+		return instance.renderText(text);
+	}	
 }
