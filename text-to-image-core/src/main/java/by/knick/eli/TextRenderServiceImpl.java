@@ -32,7 +32,7 @@ public class TextRenderServiceImpl implements TextRenderService {
 
 	private static final String FONT_FAMILY = "Serif";
 
-	private static final double THRESHOLD = 0.97;
+	private static final double HIT_RATE_THRESHOLD = 0.95;
 	private static final int MAX_ITERATIONS = 10;
 
 	@Override
@@ -160,24 +160,27 @@ public class TextRenderServiceImpl implements TextRenderService {
 
 			if (!useTallVersion) {
 				float hitRateForShortVersion = drawPosY / PREFFERABLE_HEIGHT_SHORT;
-				if (hitRateForShortVersion <= THRESHOLD) {
+				if (hitRateForShortVersion <= HIT_RATE_THRESHOLD) {
 					// Need to increase font
 					if (currentFontSize >= MAXIMUM_FONT_SIZE) {
 						// No chance to increase - use max font
 						currentFontSize = MAXIMUM_FONT_SIZE;
 						fontSizeFound = true;
 					} else {
-						if (didDecreasingOnLastIteration) {
-							multiplyFactor++;
-						}
+						// Exit loop if can not meet HIT_RATE_THRESHOLD after 10 iterations or so - it is already very close
 						if (iterationNumber >= MAX_ITERATIONS) {
 							fontSizeFound = true;
 							break;
 						}
+						// Try to avoid divergency
+						if (didDecreasingOnLastIteration) {
+							multiplyFactor++;
+						}
+						
 						currentFontSize /= Math.pow(hitRateForShortVersion, (1.0 / multiplyFactor));
 						didDecreasingOnLastIteration = false;
 					}
-				} else if (hitRateForShortVersion > THRESHOLD && hitRateForShortVersion <= 1) {
+				} else if (hitRateForShortVersion > HIT_RATE_THRESHOLD && hitRateForShortVersion <= 1) {
 					// Win!
 					fontSizeFound = true;
 				} else if (hitRateForShortVersion > 1) {
@@ -193,24 +196,26 @@ public class TextRenderServiceImpl implements TextRenderService {
 			}
 			if (useTallVersion) {
 				float hitRateForTallVersion = drawPosY / PREFFERABLE_HEIGHT_TALL;
-				if (hitRateForTallVersion <= THRESHOLD) {
+				if (hitRateForTallVersion <= HIT_RATE_THRESHOLD) {
 					// Need to increase font
 					if (currentFontSize >= MAXIMUM_FONT_SIZE) {
 						// No chance to increase - use max font
 						currentFontSize = MAXIMUM_FONT_SIZE;
 						fontSizeFound = true;
 					} else {
+						// Exit loop if can not meet HIT_RATE_THRESHOLD after 10 iterations or so - it is already very close
 						if (iterationNumber >= MAX_ITERATIONS) {
 							fontSizeFound = true;
 							break;
 						}
+						// Try to avoid divergency
 						if (didDecreasingOnLastIteration) {
 							multiplyFactor++;
 						}
 						currentFontSize /= Math.pow(hitRateForTallVersion, (1.0 / multiplyFactor));
 						didDecreasingOnLastIteration = false;
 					}
-				} else if (hitRateForTallVersion > THRESHOLD && hitRateForTallVersion <= 1) {
+				} else if (hitRateForTallVersion > HIT_RATE_THRESHOLD && hitRateForTallVersion <= 1) {
 					// Win!
 					fontSizeFound = true;
 				} else if (hitRateForTallVersion > 1) {
