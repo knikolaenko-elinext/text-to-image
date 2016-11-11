@@ -31,6 +31,7 @@ public class TextRenderServiceImpl implements TextRenderService {
 	private static final int MAXIMUM_FONT_SIZE = PREFFERABLE_HEIGHT_SHORT;
 
 	private static final String FONT_FAMILY = "Serif";
+	private static final Color FONT_COLOR = Color.BLACK;
 
 	private static final double HIT_RATE_THRESHOLD = 0.95;
 	private static final int MAX_ITERATIONS = 10;
@@ -167,7 +168,8 @@ public class TextRenderServiceImpl implements TextRenderService {
 						currentFontSize = MAXIMUM_FONT_SIZE;
 						fontSizeFound = true;
 					} else {
-						// Exit loop if can not meet HIT_RATE_THRESHOLD after 10 iterations or so - it is already very close
+						// Exit loop if can not meet HIT_RATE_THRESHOLD after 10
+						// iterations or so - it is already very close
 						if (iterationNumber >= MAX_ITERATIONS) {
 							fontSizeFound = true;
 							break;
@@ -176,7 +178,7 @@ public class TextRenderServiceImpl implements TextRenderService {
 						if (didDecreasingOnLastIteration) {
 							multiplyFactor++;
 						}
-						
+
 						currentFontSize /= Math.pow(hitRateForShortVersion, (1.0 / multiplyFactor));
 						didDecreasingOnLastIteration = false;
 					}
@@ -203,7 +205,8 @@ public class TextRenderServiceImpl implements TextRenderService {
 						currentFontSize = MAXIMUM_FONT_SIZE;
 						fontSizeFound = true;
 					} else {
-						// Exit loop if can not meet HIT_RATE_THRESHOLD after 10 iterations or so - it is already very close
+						// Exit loop if can not meet HIT_RATE_THRESHOLD after 10
+						// iterations or so - it is already very close
 						if (iterationNumber >= MAX_ITERATIONS) {
 							fontSizeFound = true;
 							break;
@@ -250,7 +253,7 @@ public class TextRenderServiceImpl implements TextRenderService {
 		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-		g2d.setColor(Color.BLACK);
+		g2d.setColor(FONT_COLOR);
 	}
 
 	public static BLOB renderTextIntoImage(String text) {
@@ -265,9 +268,9 @@ public class TextRenderServiceImpl implements TextRenderService {
 			imgOutStr = imgBlob.setBinaryStream(0);
 			imgOutStr.write(imgBytes);
 			imgOutStr.flush();
-		} catch (Throwable e){
+		} catch (Throwable e) {
 			throw new RuntimeException(e);
-		}		
+		}
 		return imgBlob;
 	}
 }
