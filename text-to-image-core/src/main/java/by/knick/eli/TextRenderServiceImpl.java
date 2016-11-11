@@ -10,11 +10,16 @@ import java.awt.font.TextLayout;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 import java.util.Hashtable;
 
 import javax.imageio.ImageIO;
+
+import oracle.jdbc.OracleConnection;
+import oracle.jdbc.OracleDriver;
+import oracle.sql.BLOB;
 
 public class TextRenderServiceImpl implements TextRenderService {
 
@@ -28,7 +33,7 @@ public class TextRenderServiceImpl implements TextRenderService {
 	private static final String FONT_FAMILY = "Serif";
 
 	private static final double THRESHOLD = 0.97;
-	private static final int MAX_ITERATIONS = 15;
+	private static final int MAX_ITERATIONS = 10;
 
 	@Override
 	public byte[] renderText(String text) {
@@ -89,15 +94,20 @@ public class TextRenderServiceImpl implements TextRenderService {
 		g2d.dispose();
 
 		// Write to byte array
-		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try {
 			ImageIO.write(img, "BMP", baos);
 			return baos.toByteArray();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
+		} finally {
+			try {
+				baos.close();
+			} catch (IOException e) {
+			}
 		}
 	}
 
-	
 	private static final class SizeCalculationResult {
 		float fontSize;
 		boolean useTallVersion;
@@ -220,12 +230,11 @@ public class TextRenderServiceImpl implements TextRenderService {
 
 		return new SizeCalculationResult(currentFontSize, useTallVersion);
 	}
-	
+
 	private void clearImage(boolean useTallVersion, Graphics2D g2d) {
 		g2d.setColor(Color.WHITE);
 		g2d.fillRect(0, 0, PREFFERABLE_WIDTH, useTallVersion ? PREFFERABLE_HEIGHT_TALL : PREFFERABLE_HEIGHT_SHORT);
 	}
-
 
 	private void setRenderingHints(Graphics2D g2d) {
 		g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
@@ -238,9 +247,22 @@ public class TextRenderServiceImpl implements TextRenderService {
 		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 		g2d.setColor(Color.BLACK);
 	}
-	
-	public static byte[] renderTextIntoImage(String text) {
+
+	public static BLOB renderTextIntoImage(String text) {
 		TextRenderService instance = new TextRenderServiceImpl();
-		return instance.renderText(text);
-	}	
+		byte[] imgBytes = instance.renderText(text);
+
+		BLOB imgBlob = null;
+		OutputStream imgOutStr = null;
+		try {
+			OracleConnection conn = (OracleConnection) new OracleDriver().defaultConnection();
+			imgBlob = BLOB.createTemporary(conn, true, oracle.sql.BLOB.DURATION_SESSION);
+			imgOutStr = imgBlob.setBinaryStream(0);
+			imgOutStr.write(imgBytes);
+			imgOutStr.flush();
+		} catch (Throwable e){
+			throw new RuntimeException(e);
+		}		
+		return imgBlob;
+	}
 }
