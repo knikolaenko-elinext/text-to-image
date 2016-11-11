@@ -72,14 +72,10 @@ public class TextRenderServiceImpl implements TextRenderService {
 		// Get lines until the entire paragraph has been displayed.
 		while (lineMeasurer.getPosition() < paragraphEnd) {
 
-			// Retrieve next layout. A cleverer program would also cache
-			// these layouts until the component is re-sized.
+			// Retrieve next layout.
 			TextLayout layout = lineMeasurer.nextLayout(breakWidth);
 
-			// Compute pen x position. If the paragraph is right-to-left we
-			// will align the TextLayouts to the right edge of the panel.
-			// Note: this won't occur for the English text in this sample.
-			// Note: drawPosX is always where the LEFT of the text is placed.
+			// Compute pen x position.
 			float drawPosX = layout.isLeftToRight() ? 0 : breakWidth - layout.getAdvance();
 
 			// Move y-coordinate by the ascent of the layout.
@@ -239,11 +235,13 @@ public class TextRenderServiceImpl implements TextRenderService {
 		return new SizeCalculationResult(currentFontSize, useTallVersion);
 	}
 
+	// Fill canvas with white
 	private void clearImage(boolean useTallVersion, Graphics2D g2d) {
 		g2d.setColor(Color.WHITE);
 		g2d.fillRect(0, 0, PREFFERABLE_WIDTH, useTallVersion ? PREFFERABLE_HEIGHT_TALL : PREFFERABLE_HEIGHT_SHORT);
 	}
 
+	// Make some prettiness
 	private void setRenderingHints(Graphics2D g2d) {
 		g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -256,6 +254,7 @@ public class TextRenderServiceImpl implements TextRenderService {
 		g2d.setColor(FONT_COLOR);
 	}
 
+	// Wraps byte array into oracle.sql.BLOB for compatibility with Oracle
 	public static BLOB renderTextIntoImage(String text) {
 		TextRenderService instance = new TextRenderServiceImpl();
 		byte[] imgBytes = instance.renderText(text);
