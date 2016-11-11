@@ -22,7 +22,7 @@ cd text-to-image
 
 Windows:
 ```
-./gradlew.bat clean build
+gradlew.bat clean build
 ```
 
 ### Run Demo Application
