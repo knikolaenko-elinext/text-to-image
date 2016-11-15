@@ -38,12 +38,19 @@ Windows:
 gradlew.bat clean build
 ```
 
-### Run Demo Application
+### Run Demo Application on local machine
 
 ```
 java -jar ./text-to-image-web/build/libs/text-to-image-web-0.0.1-SNAPSHOT.jar
 ```
 Now browse to the app at [http://localhost:8080/convert?text=Hello](http://localhost:8080/convert?text=Hello)
+
+### Run Demo Application in Docker
+
+```
+docker build -t knikolaenko/text-to-image .
+docker run -d -p 8080:8080 --name text-to-image knikolaenko/text-to-image 
+```
 
 ### Importing as Oracle stored procedure
 
