@@ -25,7 +25,7 @@ public class TextRenderServiceTest {
 			File imgBytesFile = File.createTempFile("text-render-unittest-renderHello-", ".bmp");
 			FileUtils.writeByteArrayToFile(imgBytesFile, imgBytes);
 
-			charCount = (int)(charCount * 1.5) + 1;
+			charCount = (int)(charCount * 1.3) + 1;
 		} while (charCount <= textExample.length());
 	}
 }

@@ -30,7 +30,8 @@ public class TextRenderServiceImpl implements TextRenderService {
 
 	private static final int MINIMAL_FONT_SIZE = 10;
 	private static final int SIGNATURE_FONT_SIZE = MINIMAL_FONT_SIZE;
-	private static final int MAXIMUM_FONT_SIZE = PREFFERABLE_HEIGHT_SHORT - SIGNATURE_FONT_SIZE;
+	private static final int SIGNATURE_PADDING = 5;
+	private static final int MAXIMUM_FONT_SIZE = PREFFERABLE_HEIGHT_SHORT - SIGNATURE_FONT_SIZE - SIGNATURE_PADDING;
 
 	private static final String FONT_FAMILY = "Serif";
 	private static final Color FONT_COLOR = Color.BLACK;
@@ -86,7 +87,7 @@ public class TextRenderServiceImpl implements TextRenderService {
 			// Move y-coordinate by the ascent of the layout.
 			drawPosY += layout.getAscent();
 
-			if (drawPosY >= imgHeight - SIGNATURE_FONT_SIZE) {
+			if (drawPosY + layout.getDescent() > imgHeight - SIGNATURE_FONT_SIZE - SIGNATURE_PADDING) {
 				// Do not overlap signature
 				break;
 			}
@@ -180,7 +181,7 @@ public class TextRenderServiceImpl implements TextRenderService {
 			}
 
 			if (!useTallVersion) {
-				float hitRateForShortVersion = drawPosY / (PREFFERABLE_HEIGHT_SHORT - SIGNATURE_FONT_SIZE);
+				float hitRateForShortVersion = drawPosY / (PREFFERABLE_HEIGHT_SHORT - SIGNATURE_FONT_SIZE - SIGNATURE_PADDING);
 				if (hitRateForShortVersion <= HIT_RATE_THRESHOLD) {
 					// Need to increase font
 					if (currentFontSize >= MAXIMUM_FONT_SIZE) {
@@ -217,7 +218,7 @@ public class TextRenderServiceImpl implements TextRenderService {
 				}
 			}
 			if (useTallVersion) {
-				float hitRateForTallVersion = drawPosY / (PREFFERABLE_HEIGHT_TALL - SIGNATURE_FONT_SIZE);
+				float hitRateForTallVersion = drawPosY / (PREFFERABLE_HEIGHT_TALL - SIGNATURE_FONT_SIZE - SIGNATURE_PADDING);
 				if (hitRateForTallVersion <= HIT_RATE_THRESHOLD) {
 					// Need to increase font
 					if (currentFontSize >= MAXIMUM_FONT_SIZE) {
