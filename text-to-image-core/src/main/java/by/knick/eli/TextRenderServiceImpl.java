@@ -1,6 +1,7 @@
 package by.knick.eli;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
@@ -28,13 +29,16 @@ public class TextRenderServiceImpl implements TextRenderService {
 	private static final int PREFFERABLE_HEIGHT_TALL = 198;
 
 	private static final int MINIMAL_FONT_SIZE = 10;
-	private static final int MAXIMUM_FONT_SIZE = PREFFERABLE_HEIGHT_SHORT;
+	private static final int SIGNATURE_FONT_SIZE = MINIMAL_FONT_SIZE;
+	private static final int MAXIMUM_FONT_SIZE = PREFFERABLE_HEIGHT_SHORT - SIGNATURE_FONT_SIZE;
 
 	private static final String FONT_FAMILY = "Serif";
 	private static final Color FONT_COLOR = Color.BLACK;
 
 	private static final double HIT_RATE_THRESHOLD = 0.95;
 	private static final int MAX_ITERATIONS = 10;
+
+	private static final String SIGNATURE_TEXT = "\u00A9 mmi GmbH";
 
 	@Override
 	public byte[] renderText(String text) {
@@ -55,7 +59,8 @@ public class TextRenderServiceImpl implements TextRenderService {
 		// index of the first character after the end of the paragraph.
 		int paragraphEnd = paragraph.getEndIndex();
 
-		BufferedImage img = new BufferedImage(PREFFERABLE_WIDTH, useTallVersion ? PREFFERABLE_HEIGHT_TALL : PREFFERABLE_HEIGHT_SHORT, BufferedImage.TYPE_INT_RGB);
+		int imgHeight = useTallVersion ? PREFFERABLE_HEIGHT_TALL : PREFFERABLE_HEIGHT_SHORT;
+		BufferedImage img = new BufferedImage(PREFFERABLE_WIDTH, imgHeight, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2d = img.createGraphics();
 		clearImage(useTallVersion, g2d);
 		setRenderingHints(g2d);
@@ -81,12 +86,19 @@ public class TextRenderServiceImpl implements TextRenderService {
 			// Move y-coordinate by the ascent of the layout.
 			drawPosY += layout.getAscent();
 
+			if (drawPosY >= imgHeight - SIGNATURE_FONT_SIZE) {
+				// Do not overlap signature
+				break;
+			}
+
 			// Draw the TextLayout at (drawPosX, drawPosY).
 			layout.draw(g2d, drawPosX, drawPosY);
 
 			// Move y-coordinate in preparation for next layout.
 			drawPosY += layout.getDescent() + layout.getLeading();
 		}
+
+		drawSignature(g2d, imgHeight);
 
 		g2d.dispose();
 
@@ -103,6 +115,18 @@ public class TextRenderServiceImpl implements TextRenderService {
 			} catch (IOException e) {
 			}
 		}
+	}
+
+	private void drawSignature(Graphics2D g2d, int imgHeight) {
+		Hashtable<TextAttribute, Object> textAttributes = new Hashtable<TextAttribute, Object>();
+		textAttributes.put(TextAttribute.FAMILY, FONT_FAMILY);
+		textAttributes.put(TextAttribute.SIZE, new Float(SIGNATURE_FONT_SIZE));
+		Font font = new Font(textAttributes);
+		g2d.setFont(font);
+
+		float drawPosX = 1;
+		float drawPosY = imgHeight - g2d.getFontMetrics().getDescent();
+		g2d.drawString(SIGNATURE_TEXT, drawPosX, drawPosY);
 	}
 
 	private static final class SizeCalculationResult {
@@ -156,7 +180,7 @@ public class TextRenderServiceImpl implements TextRenderService {
 			}
 
 			if (!useTallVersion) {
-				float hitRateForShortVersion = drawPosY / PREFFERABLE_HEIGHT_SHORT;
+				float hitRateForShortVersion = drawPosY / (PREFFERABLE_HEIGHT_SHORT - SIGNATURE_FONT_SIZE);
 				if (hitRateForShortVersion <= HIT_RATE_THRESHOLD) {
 					// Need to increase font
 					if (currentFontSize >= MAXIMUM_FONT_SIZE) {
@@ -193,7 +217,7 @@ public class TextRenderServiceImpl implements TextRenderService {
 				}
 			}
 			if (useTallVersion) {
-				float hitRateForTallVersion = drawPosY / PREFFERABLE_HEIGHT_TALL;
+				float hitRateForTallVersion = drawPosY / (PREFFERABLE_HEIGHT_TALL - SIGNATURE_FONT_SIZE);
 				if (hitRateForTallVersion <= HIT_RATE_THRESHOLD) {
 					// Need to increase font
 					if (currentFontSize >= MAXIMUM_FONT_SIZE) {
