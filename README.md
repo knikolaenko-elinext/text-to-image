@@ -54,9 +54,9 @@ docker run -d -p 8080:8080 --name text-to-image knikolaenko/text-to-image
 
 ### Importing as Oracle stored procedure
 
-SQL script defining stored procedure will be at text-to-image-core/src/generated/sql/by/knick/eli/textRenderer.sql:
+SQL script defining stored procedure will be at [text-to-image-core/src/generated/sql/by/knick/eli/textRenderer.sql](https://github.com/knikolaenko-elinext/text-to-image/blob/master/text-to-image-core/src/generated/sql/by/knick/eli/textRenderer.sql):
 ```
-sqlplus <user>/<password> < [text-to-image-core/src/generated/sql/by/knick/eli/textRenderer.sql](https://github.com/knikolaenko-elinext/text-to-image/blob/master/text-to-image-core/src/generated/sql/by/knick/eli/textRenderer.sql)
+sqlplus <user>/<password> < text-to-image-core/src/generated/sql/by/knick/eli/textRenderer.sql
 ```
 
 Test call:
