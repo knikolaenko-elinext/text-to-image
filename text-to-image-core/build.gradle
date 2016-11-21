@@ -25,8 +25,8 @@ task fillTextRendererSqlTemplate(type: Copy) {
 	include '**/*.sql.tmpl'
 	expand (textRendererServiceSrc: file('src/main/java/by/knick/eli/TextRenderServiceImpl.java').text)
 	rename { String fileName ->
-        fileName.replace('.tmpl', '');
-    }
+		fileName.replace('.tmpl', '');
+	}
 }
 
 assemble.dependsOn fillTextRendererSqlTemplate
