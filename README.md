@@ -54,37 +54,12 @@ docker run -d -p 8080:8080 --name text-to-image knikolaenko/text-to-image
 
 ### Importing as Oracle stored procedure
 
-Load the class on the server using the loadjava tool:
+SQL script defining stored procedure will be at text-to-image-core/src/generated/sql/by/knick/eli/textRenderer.sql:
 ```
-loadjava -user <user> text-to-image-core/build/libs/text-to-image-core-0.0.1-SNAPSHOT.jar
-Password: <password>
-```
-
-Publish the stored procedure:
-```
-sqlplus
-Enter user-name: <user>
-Enter password: <password>
-
-SQL>
-CREATE OR REPLACE FUNCTION renderTextIntoImage(text IN VARCHAR2) RETURN BLOB
-AS LANGUAGE JAVA 
-NAME 'by.knick.eli.TextRenderServiceImpl.renderTextIntoImage(java.lang.String) return oracle.sql.BLOB';
-/
+sqlplus <user>/<password> < text-to-image-core/src/generated/sql/by/knick/eli/textRenderer.sql
 ```
 
 Test call:
 ```
-CREATE GLOBAL TEMPORARY TABLE demo_images (img BLOB);
-
-DECLARE 
-	img_blob BLOB;
-BEGIN
-	img_blob := renderTextIntoImage('Lorem ipsum dolor...');
-	INSERT INTO demo_images(img) VALUES(img_blob);
-END;
-/
-
-SELECT * FROM demo_images;
-
+SELECT TextRenderer.renderTextIntoImage('Lorem ipsum dolor...') FROM DUAL;
 ```

@@ -18,3 +18,15 @@ dependencies {
 	testCompile group: 'junit', name: 'junit', version: '4.12'
 	testCompile group: 'commons-io', name: 'commons-io', version: '2.5'
 }
+
+task fillTextRendererSqlTemplate(type: Copy) {
+	from ('src/main/resources')
+	into ('src/generated/sql')
+	include '**/*.sql.tmpl'
+	expand (textRendererServiceSrc: file('src/main/java/by/knick/eli/TextRenderServiceImpl.java').text)
+	rename { String fileName ->
+        fileName.replace('.tmpl', '');
+    }
+}
+
+assemble.dependsOn fillTextRendererSqlTemplate

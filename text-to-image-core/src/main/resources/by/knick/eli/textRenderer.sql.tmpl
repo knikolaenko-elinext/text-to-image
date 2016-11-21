@@ -1,0 +1,22 @@
+CREATE OR REPLACE AND COMPILE JAVA SOURCE NAMED "TextRenderServiceImpl" AS
+${textRendererServiceSrc}
+/
+
+CREATE OR REPLACE PACKAGE TextRenderer AS
+	FUNCTION renderTextIntoImage(text IN VARCHAR2) RETURN BLOB;
+END TextRenderer;
+/
+
+CREATE OR REPLACE PACKAGE BODY TextRenderer AS	
+	PROCEDURE renderTextIntoImageBlob (text IN VARCHAR2, img_format IN VARCHAR2, img_blob IN BLOB) IS
+		LANGUAGE JAVA NAME 'by.knick.eli.TextRenderServiceImpl.renderTextIntoImageBlob(java.lang.String, java.lang.String, oracle.sql.BLOB)';
+
+	FUNCTION renderTextIntoImage(text IN VARCHAR2) RETURN BLOB IS
+		img_blob BLOB;
+	BEGIN
+		DBMS_LOB.createtemporary (img_blob, TRUE);
+		renderTextIntoImageBlob(text, 'BMP', img_blob);
+      	RETURN img_blob;
+	END;
+END TextRenderer;
+/
