@@ -18,12 +18,9 @@ import java.util.Hashtable;
 
 import javax.imageio.ImageIO;
 
-import oracle.jdbc.OracleConnection;
-import oracle.jdbc.OracleDriver;
 import oracle.sql.BLOB;
 
-public class TextRenderServiceImpl implements TextRenderService {
-
+public class TextRenderServiceImpl {
 	private static final int PREFFERABLE_WIDTH = 198;
 	private static final int PREFFERABLE_HEIGHT_SHORT = 68;
 	private static final int PREFFERABLE_HEIGHT_TALL = 198;
@@ -41,8 +38,7 @@ public class TextRenderServiceImpl implements TextRenderService {
 
 	private static final String SIGNATURE_TEXT = "\u00A9 mmi GmbH";
 
-	@Override
-	public byte[] renderText(String text) {
+	public byte[] renderText(String text, String imgFormatName) {
 		SizeCalculationResult sizeCalculationResult = calculateFontSize(text);
 
 		float fontSize = sizeCalculationResult.fontSize;
@@ -106,7 +102,7 @@ public class TextRenderServiceImpl implements TextRenderService {
 		// Write to byte array
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
-			ImageIO.write(img, "BMP", baos);
+			ImageIO.write(img, imgFormatName, baos);
 			return baos.toByteArray();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
@@ -203,7 +199,7 @@ public class TextRenderServiceImpl implements TextRenderService {
 						currentFontSize /= Math.pow(hitRateForShortVersion, (1.0 / multiplyFactor));
 						didDecreasingOnLastIteration = false;
 					}
-				} else if (hitRateForShortVersion > HIT_RATE_THRESHOLD && hitRateForShortVersion <= 1) {
+				} else if (hitRateForShortVersion > HIT_RATE_THRESHOLD && (hitRateForShortVersion <= 1)) {
 					// Win!
 					fontSizeFound = true;
 				} else if (hitRateForShortVersion > 1) {
@@ -239,7 +235,7 @@ public class TextRenderServiceImpl implements TextRenderService {
 						currentFontSize /= Math.pow(hitRateForTallVersion, (1.0 / multiplyFactor));
 						didDecreasingOnLastIteration = false;
 					}
-				} else if (hitRateForTallVersion > HIT_RATE_THRESHOLD && hitRateForTallVersion <= 1) {
+				} else if (hitRateForTallVersion > HIT_RATE_THRESHOLD && (hitRateForTallVersion <= 1)) {
 					// Win!
 					fontSizeFound = true;
 				} else if (hitRateForTallVersion > 1) {
@@ -279,22 +275,16 @@ public class TextRenderServiceImpl implements TextRenderService {
 		g2d.setColor(FONT_COLOR);
 	}
 
-	// Wraps byte array into oracle.sql.BLOB for compatibility with Oracle
-	public static BLOB renderTextIntoImage(String text) {
-		TextRenderService instance = new TextRenderServiceImpl();
-		byte[] imgBytes = instance.renderText(text);
-
-		BLOB imgBlob = null;
+	public static void renderTextIntoImageBlob(String text, String imgFormatName, BLOB imgBlob) {
+		TextRenderServiceImpl instance = new TextRenderServiceImpl();
+		byte[] imgBytes = instance.renderText(text, imgFormatName);
 		OutputStream imgOutStr = null;
 		try {
-			OracleConnection conn = (OracleConnection) new OracleDriver().defaultConnection();
-			imgBlob = BLOB.createTemporary(conn, true, oracle.sql.BLOB.DURATION_SESSION);
 			imgOutStr = imgBlob.setBinaryStream(0);
 			imgOutStr.write(imgBytes);
 			imgOutStr.flush();
 		} catch (Throwable e) {
 			throw new RuntimeException(e);
 		}
-		return imgBlob;
 	}
 }

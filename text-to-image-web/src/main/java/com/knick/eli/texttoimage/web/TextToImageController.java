@@ -11,18 +11,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import by.knick.eli.TextRenderService;
 import by.knick.eli.TextRenderServiceImpl;
 
 @Controller
 @RequestMapping(value = "/convert")
 public class TextToImageController {
 
-	private TextRenderService renderService = new TextRenderServiceImpl();
+	private TextRenderServiceImpl renderService = new TextRenderServiceImpl();
 
 	@RequestMapping(method = RequestMethod.GET)
 	public void convert(@RequestParam(defaultValue = "Please specify string in 'text' request parameter") String text, HttpServletResponse response) throws IOException {
-		byte[] imageBytes = renderService.renderText(text);
+		byte[] imageBytes = renderService.renderText(text, "BMP");
 
 		response.setContentType("image/bmp");
 		try (ServletOutputStream outputStream = response.getOutputStream()) {
