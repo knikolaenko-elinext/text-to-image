@@ -6,9 +6,9 @@ For reviewing functionality you can run [Live example](http://139.59.147.15:8080
 
 Minimum font size: MINIMAL_FONT_SIZE = 10
 
-Maximum font size: MAXIMUM_FONT_SIZE = PREFFERABLE_HEIGHT_SHORT = 68
+Maximum font size: MAXIMUM_FONT_SIZE = PREFFERABLE_HEIGHT_SHORT - SIGNATURE_FONT_SIZE - SIGNATURE_PADDING = 53
 
-Font family: FONT_FAMILY = "Serif"
+Font family: FONT_FAMILY = "HelveticaNeueLT Com 57 Cn"
 
 Font color: FONT_COLOR = Color.BLACK
 
@@ -63,3 +63,17 @@ Test call:
 ```
 SELECT TextRenderer.renderTextIntoImage('Lorem ipsum dolor...') FROM DUAL;
 ```
+
+### Font changing
+For rendering with another font you need just to change value in this line
+```
+private static final String FONT_FAMILY = "HelveticaNeueLT Com 57 Cn";
+```
+to whatever you want.
+
+For determining font family on Windows:
+
+1.  Open 'Control Panel'
+2.  In top right corner search for 'Fonts'. Open 'Fonts' configs from search results.
+3.  In top right corner search for 'Helvetica' (or whatever). Open appropriate font from search results.
+4.  On first line inside you will see 'Font Name' (e.g. 'HelveticaNeueLT Com 57 Cn'). This is exactly you need to assign to FONT_FAMILY value.
