@@ -32,6 +32,8 @@ public class TextRenderServiceImpl {
 
 	private static final String FONT_FAMILY = "HelveticaNeueLT Com 57 Cn";
 	private static final Color FONT_COLOR = Color.BLACK;
+	private static final Color BACKGROUND_COLOR = new Color(0xDD, 0xDD, 0xDD);
+	private static final int SIDE_PADDING = 1;
 
 	private static final double HIT_RATE_THRESHOLD = 0.95;
 	private static final int MAX_ITERATIONS = 10;
@@ -66,7 +68,7 @@ public class TextRenderServiceImpl {
 		LineBreakMeasurer lineMeasurer = new LineBreakMeasurer(paragraph, frc);
 
 		// Set break width to width of Component.
-		float breakWidth = PREFFERABLE_WIDTH;
+		float breakWidth = PREFFERABLE_WIDTH - 2 * SIDE_PADDING;
 		float drawPosY = 0;
 		// Set position to the index of the first character in the paragraph.
 		lineMeasurer.setPosition(paragraphStart);
@@ -78,7 +80,7 @@ public class TextRenderServiceImpl {
 			TextLayout layout = lineMeasurer.nextLayout(breakWidth);
 
 			// Compute pen x position.
-			float drawPosX = layout.isLeftToRight() ? 0 : breakWidth - layout.getAdvance();
+			float drawPosX = SIDE_PADDING;
 
 			// Move y-coordinate by the ascent of the layout.
 			drawPosY += layout.getAscent();
@@ -167,11 +169,12 @@ public class TextRenderServiceImpl {
 			// paragraph.
 			lineMeasurer.setPosition(paragraph.getBeginIndex());
 
+			float breakWidth = PREFFERABLE_WIDTH - 2 * SIDE_PADDING;
 			float drawPosY = 0;
 			// Get lines until the entire paragraph has been displayed.
 			while (lineMeasurer.getPosition() < paragraph.getEndIndex()) {
 				// Retrieve next row layout
-				TextLayout layout = lineMeasurer.nextLayout(PREFFERABLE_WIDTH);
+				TextLayout layout = lineMeasurer.nextLayout(breakWidth);
 				// Move y-coordinate by the font size
 				drawPosY += layout.getAscent() + layout.getDescent() + layout.getLeading();
 			}
@@ -258,7 +261,7 @@ public class TextRenderServiceImpl {
 
 	// Fill canvas with white
 	private void clearImage(boolean useTallVersion, Graphics2D g2d) {
-		g2d.setColor(Color.WHITE);
+		g2d.setColor(BACKGROUND_COLOR);
 		g2d.fillRect(0, 0, PREFFERABLE_WIDTH, useTallVersion ? PREFFERABLE_HEIGHT_TALL : PREFFERABLE_HEIGHT_SHORT);
 	}
 
