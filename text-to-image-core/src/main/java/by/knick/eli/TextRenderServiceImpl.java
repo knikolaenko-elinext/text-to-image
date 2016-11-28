@@ -30,7 +30,7 @@ public class TextRenderServiceImpl {
 	private static final int SIGNATURE_PADDING = 5;
 	private static final int MAXIMUM_FONT_SIZE = PREFFERABLE_HEIGHT_SHORT - SIGNATURE_FONT_SIZE - SIGNATURE_PADDING;
 
-	private static final String FONT_FAMILY = "Serif";
+	private static final String FONT_FAMILY = "HelveticaNeueLT Com 57 Cn";
 	private static final Color FONT_COLOR = Color.BLACK;
 
 	private static final double HIT_RATE_THRESHOLD = 0.95;
