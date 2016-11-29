@@ -36,7 +36,7 @@ public class TextRenderServiceImpl {
 	private static final int SIDE_PADDING = 1;
 
 	private static final double HIT_RATE_THRESHOLD = 0.95;
-	private static final int MAX_ITERATIONS = 10;
+	private static final int MAX_ITERATIONS = 20;
 
 	private static final String SIGNATURE_TEXT = "\u00A9 mmi GmbH";
 
@@ -146,6 +146,7 @@ public class TextRenderServiceImpl {
 		FontRenderContext frc = g2d.getFontRenderContext();
 
 		float currentFontSize = MINIMAL_FONT_SIZE;
+		float prevIterationFontSize = currentFontSize;
 
 		Hashtable<TextAttribute, Object> textAttributes = new Hashtable<TextAttribute, Object>();
 		textAttributes.put(TextAttribute.FAMILY, FONT_FAMILY);
@@ -188,17 +189,11 @@ public class TextRenderServiceImpl {
 						currentFontSize = MAXIMUM_FONT_SIZE;
 						fontSizeFound = true;
 					} else {
-						// Exit loop if can not meet HIT_RATE_THRESHOLD after 10
-						// iterations or so - it is already very close
-						if (iterationNumber >= MAX_ITERATIONS) {
-							fontSizeFound = true;
-							break;
-						}
 						// Try to avoid divergency
 						if (didDecreasingOnLastIteration) {
-							multiplyFactor++;
+							multiplyFactor *= 2;
 						}
-
+						prevIterationFontSize = currentFontSize;
 						currentFontSize /= Math.pow(hitRateForShortVersion, (1.0 / multiplyFactor));
 						didDecreasingOnLastIteration = false;
 					}
@@ -211,8 +206,16 @@ public class TextRenderServiceImpl {
 						// No way to fit short version, go to tall
 						useTallVersion = true;
 					} else {
-						currentFontSize /= Math.pow(hitRateForShortVersion, (1.0 / multiplyFactor));
-						didDecreasingOnLastIteration = true;
+						// Exit loop if can not meet HIT_RATE_THRESHOLD after 20
+						// iterations or so - it is already very close
+						if (iterationNumber >= MAX_ITERATIONS) {
+							currentFontSize = prevIterationFontSize;
+							fontSizeFound = true;
+							break;
+						} else {
+							currentFontSize /= Math.pow(hitRateForShortVersion, (1.0 / multiplyFactor));
+							didDecreasingOnLastIteration = true;
+						}
 					}
 				}
 			}
@@ -225,16 +228,11 @@ public class TextRenderServiceImpl {
 						currentFontSize = MAXIMUM_FONT_SIZE;
 						fontSizeFound = true;
 					} else {
-						// Exit loop if can not meet HIT_RATE_THRESHOLD after 10
-						// iterations or so - it is already very close
-						if (iterationNumber >= MAX_ITERATIONS) {
-							fontSizeFound = true;
-							break;
-						}
 						// Try to avoid divergency
 						if (didDecreasingOnLastIteration) {
-							multiplyFactor++;
+							multiplyFactor *= 2;
 						}
+						prevIterationFontSize = currentFontSize;
 						currentFontSize /= Math.pow(hitRateForTallVersion, (1.0 / multiplyFactor));
 						didDecreasingOnLastIteration = false;
 					}
@@ -248,8 +246,16 @@ public class TextRenderServiceImpl {
 						currentFontSize = MINIMAL_FONT_SIZE;
 						fontSizeFound = true;
 					} else {
-						currentFontSize /= Math.pow(hitRateForTallVersion, (1.0 / multiplyFactor));
-						didDecreasingOnLastIteration = true;
+						// Exit loop if can not meet HIT_RATE_THRESHOLD after 20
+						// iterations or so - it is already very close
+						if (iterationNumber >= MAX_ITERATIONS) {
+							currentFontSize = prevIterationFontSize;
+							fontSizeFound = true;
+							break;
+						} else {
+							currentFontSize /= Math.pow(hitRateForTallVersion, (1.0 / multiplyFactor));
+							didDecreasingOnLastIteration = true;
+						}
 					}
 				}
 			}
